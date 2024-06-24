@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import CardList from "./Components/Card-lis-comp/CardList.Comp";
+import SearchInput from "./Components/Input-comp/SerachInput.Comp";
 
-function App() {
+const App = () => {
+  const [teachers, setTeachers] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredTeachers, setFilteredTeachers] = useState([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((Response) => Response.json())
+      .then((users) => setTeachers(users));
+  }, []);
+
+  useEffect(() => {
+    const newFilteredTeachers = teachers.filter((teacher) =>
+      teacher.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredTeachers(newFilteredTeachers);
+  }, [searchValue, teachers]);
+
+  const onSearchChange = (event) => {
+    setSearchValue(event.target.value.toLowerCase());
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1 className="appTitle">Teachers</h1>
+      <SearchInput
+        onSearchChange={onSearchChange}
+        placeholder="Search Teachers"
+        className="SearchBox"
+      />
+      <CardList teachers={filteredTeachers} />
     </div>
   );
-}
+};
 
 export default App;
